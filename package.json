@@ -1,15 +1,32 @@
 {
   "name": "@dodgydre/vuequill",
+  "private": false,
   "version": "1.0.0",
-  "description": "Fork of vueup/vue-quill for quill 2",
-  "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/dodgydre/vuequill.git"
+  "type": "module",
+  "files": ["dist"],
+  "main": "./dist/editor.umd.cjs",
+  "module": "./dist/editor.js",
+  "exports": {
+    ".": {
+      "import": "./dist/editor.js",
+      "require": "./dist/editor.umd.cjs"
+    },
+    "./dist/style.css": "./dist/style.css"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "vite build &&vue-tsc --emitDeclarationOnly",
+    "preview": "vite preview"
   },
-  "author": "Andreas Georghiou",
-  "license": "ISC"
+  "dependencies": {
+    "@types/node": "^20.11.24",
+    "vue": "^3.4.19"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.4",
+    "quill": "^2.0.0-rc.2",
+    "typescript": "^5.2.2",
+    "vite": "^5.1.4",
+    "vue-tsc": "^1.8.27"
+  }
 }
