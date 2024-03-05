@@ -7,7 +7,7 @@ export default defineConfig({
     resolve: {
         alias: [
             {
-                find: "@dodgydre/vuequill",
+                find: "@ohgeorgie/vuequill",
                 replacement: path.resolve(__dirname, "../src/"),
             }
         ]

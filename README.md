@@ -2,7 +2,7 @@
 
 ### Installation
 
-npm install @dodgydre/vuequill@latest --save
+npm install @ohgeorgie/vuequill@latest --save
 
 ### Usage
 
@@ -12,7 +12,7 @@ in main.js
 import { createApp } from "vue";
 import App from "./App.vue";
 import "quill/dist/quill.snow.css";
-import { Editor } from "@dodgydre/vuequill";
+import { Editor } from "@ohgeorgie/vuequill";
 
 const globalOptions = {
    debug: "warn",

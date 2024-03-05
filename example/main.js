@@ -1,7 +1,7 @@
 import {createApp} from "vue"
 import App from "./App.vue"
 import "quill/dist/quill.snow.css"
-import { Editor } from "@dodgydre/vuequill"
+import { Editor } from "@ohgeorgie/vuequill"
 
 const globalOptions = {
     debug: "warn",
