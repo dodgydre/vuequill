@@ -13,60 +13,17 @@ import Quill from "quill";
 import Delta from "quill-delta";
 import { type ToolbarOptions, toolbarOptions } from "./options";
 
-import * as Parchment from "parchment";
-
-type Sources = "api" | "user" | "silent";
-type TextChangeHandler = (
-  delta: Delta,
-  oldContents: Delta,
-  source: Sources
-) => any;
-type SelectionChangeHandler = (
-  range: RangeStatic,
-  oldRange: RangeStatic,
-  source: Sources
-) => any;
-type EditorChangeHandler =
-  | ((
-      name: "text-change",
-      delta: Delta,
-      oldContents: Delta,
-      source: Sources
-    ) => any)
-  | ((
-      name: "selection-change",
-      range: RangeStatic,
-      oldRange: RangeStatic,
-      source: Sources
-    ) => any);
-type DebugLevel = "log" | "warn" | "error" | "info" | boolean;
-type Module = { name: string; module: unknown; options?: object };
-
-interface Options {
-  theme?: string;
-  debug?: DebugLevel | boolean;
-  registry?: Parchment.Registry;
-  readOnly?: boolean;
-  container?: HTMLElement | string;
-  placeholder?: string;
-  bounds?: HTMLElement | string | null;
-  modules?: Record<string, unknown>;
-}
-
-interface RangeStatic {
-  index: number;
-  length: number;
-}
-
-type Toolbar = {
-  container: HTMLElement;
-  controls: [string, HTMLElement][];
-  handlers: Object;
-  options: Object;
-  quill: Quill;
-};
-
-type ContentPropType = string | Delta | undefined | null;
+import {
+  Sources,
+  TextChangeHandler,
+  SelectionChangeHandler,
+  EditorChangeHandler,
+  Module,
+  Options,
+  RangeStatic,
+  Toolbar,
+  ContentPropType,
+} from "./types";
 
 let quill: Quill | null;
 let options: Options;
@@ -279,7 +236,7 @@ const internalModelEquals = (against: ContentPropType) => {
   return false;
 };
 
-const handleTextChange = (
+const handleTextChange: TextChangeHandler = (
   delta: Delta,
   oldContents: Delta,
   source: Sources
@@ -293,7 +250,7 @@ const handleTextChange = (
 };
 
 const isEditorFocus = ref<Boolean>();
-const handleSelectionChange = (
+const handleSelectionChange: SelectionChangeHandler = (
   range: RangeStatic,
   oldRange: RangeStatic,
   source: Sources
@@ -308,7 +265,7 @@ watch(isEditorFocus, (focus) => {
   else emit("blur", editor);
 });
 
-const handleEditorChange = (
+const handleEditorChange: EditorChangeHandler = (
   ...args:
     | [name: "text-change", delta: Delta, oldContents: Delta, source: Sources]
     | [name: "selection-change", range: Range, oldRange: Range, source: Sources]

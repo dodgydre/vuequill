@@ -1,18 +1,125 @@
-# Vue 3 + TypeScript + Vite
+## Fork of [@vueup/vuequill](https://github.com/vueup/vue-quill) using [Quill@rc](https://github.com/quilljs/quill)
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+### Installation
 
-## Recommended IDE Setup
+npm install @dodgydre/vuequill@latest --save
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+### Usage
 
-## Type Support For `.vue` Imports in TS
+in main.js
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
+```js
+import { createApp } from "vue";
+import App from "./App.vue";
+import "quill/dist/quill.snow.css";
+import { Editor } from "@dodgydre/vuequill";
 
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
+const globalOptions = {
+   debug: "warn",
+   modules: {},
+   placeholder: "Something to add...",
+   theme: "snow",
+};
 
-1. Disable the built-in TypeScript Extension
-   1. Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-   2. Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+Editor.props.globalOptions.default = () => globalOptions;
+
+createApp(App).component("Editor", Editor).mount('#app');
+
+```
+
+### Option 1
+Use it in a vue component file
+
+```js
+<script setup>
+   import { ref } from "vue"
+   const body = ref(null)
+</script>
+<template>
+   <Editor ref="editor" v-model:content="body"
+   toolbar="essential">
+   </Editor>
+</template>
+```
+
+
+### Option 2
+Or create an Editor component if you want to add extra options
+
+QuillEditor.vue:
+```js 
+<script setup>
+import { ref, toRef } from "vue";
+const props = defineProps({
+  toolbar: {
+    type: String,
+    required: false,
+    validator: (value) => {
+      return ["essential", "minimal", "full"].indexOf(value);
+    },
+  },
+});
+const body = defineModel();
+const editorBody = toRef(body);
+
+const ready = () => {
+   console.log(editor);
+   console.log(editor.value.getEditor());
+}
+
+</script>
+
+<template>
+   <Editor
+      ref="editor"
+      v-model:content="body"
+      contentType="html"
+      toolbar="#toolbar"
+      @ready="ready"
+    >
+      <template #toolbar>
+        <div id="toolbar">
+          <button class="ql-bold"></button>
+          <button class="ql-italic"></button>
+          <button class="ql-underline"></button>
+          <button class="ql-list" value="bullet"></button>
+          <button class="ql-list" value="ordered"></button>
+          <button class="ql-indent" value="+1"></button>
+          <button class="ql-indent" value="-1"></button>
+
+          <select class="ql-color"></select>
+          <select class="ql-background"></select>
+
+          <select class="ql-size">
+            <option value="small"></option>
+            <option selected></option>
+            <option value="large"></option>
+            <option value="huge"></option>
+          </select>
+
+          <button class="ql-clean"><button>
+          <button class="ql-image"><button>
+          <button class="ql-video"><button>
+          <button class="ql-link"></button>
+
+          
+        </div>
+      </template>
+    </Editor>
+</template>
+```
+
+And add it to other components
+```js
+<script setup>
+   import QuillEditor from "./QuillEditor.vue"
+
+   const body = ref(null)
+</script>
+
+<template>
+   <div class="container">
+      <QuillEditor v-model="body" />
+   </div>
+</template>
+```
