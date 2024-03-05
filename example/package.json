@@ -1,0 +1,27 @@
+{
+  "name": "example",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 5173 --host",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "tailwindcss": "^3.4.1",
+    "vue": "^3.3.11"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.5.2",
+    "autoprefixer": "^10.4.17",
+    "emojibase": "^15.3.0",
+    "emojibase-data": "^15.3.0",
+    "lodash": "^4.17.21",
+    "normalize-url": "^8.0.0",
+    "postcss": "^8.4.33",
+    "quill": "^2.0.0-rc.2",
+    "vite": "^5.0.8",
+    "vite-plugin-vue-devtools": "^7.0.15"
+  }
+}

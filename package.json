@@ -14,9 +14,11 @@
     "./dist/style.css": "./dist/style.css"
   },
   "scripts": {
+    "postinstall": "cd example && npm install",
     "dev": "vite",
     "build": "vite build &&vue-tsc --emitDeclarationOnly",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "demo:dev": "cd example && npm run dev"
   },
   "dependencies": {
     "@types/node": "^20.11.24",

@@ -28,6 +28,7 @@ createApp(App).component("Editor", Editor).mount('#app');
 ```
 
 ### Option 1
+
 Use it in a vue component file
 
 ```js
@@ -42,11 +43,12 @@ Use it in a vue component file
 </template>
 ```
 
-
 ### Option 2
+
 Or create an Editor component if you want to add extra options
 
 QuillEditor.vue:
+
 ```js 
 <script setup>
 import { ref, toRef } from "vue";
@@ -110,6 +112,7 @@ const ready = () => {
 ```
 
 And add it to other components
+
 ```js
 <script setup>
    import QuillEditor from "./QuillEditor.vue"
@@ -123,3 +126,14 @@ And add it to other components
    </div>
 </template>
 ```
+
+## Example
+
+In the /example folder is an example of both options.
+
+```console
+npm install
+npm run demo:dev
+```
+
+The QuillEditor.vue has an emoji panel component added to the toolbar showing how to communicate between vue and quill. insertText() and insertEmbed() functions were added to the original vuequill package to allow this.

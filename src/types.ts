@@ -2,6 +2,8 @@ import Quill from "quill";
 import Delta from "quill-delta"
 import * as Parchment from "parchment"
 
+/** Added these because I can't figure out how to bring in the types from Quill */
+
 type Sources = "api" | "user" | "silent";
 type TextChangeHandler = (
   delta: Delta,
