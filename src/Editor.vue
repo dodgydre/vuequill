@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import {
   nextTick,
   onBeforeUnmount,
@@ -6,30 +6,85 @@ import {
   ref,
   watch,
   defineExpose,
+  PropType,
+  useSlots,
 } from "vue";
 import Quill from "quill";
 import Delta from "quill-delta";
-import { toolbarOptions } from "./options";
+import { type ToolbarOptions, toolbarOptions } from "./options";
 
 import * as Parchment from "parchment";
 
-let quill;
-let options;
-const editor = ref(null);
+type Sources = "api" | "user" | "silent";
+type TextChangeHandler = (
+  delta: Delta,
+  oldContents: Delta,
+  source: Sources
+) => any;
+type SelectionChangeHandler = (
+  range: RangeStatic,
+  oldRange: RangeStatic,
+  source: Sources
+) => any;
+type EditorChangeHandler =
+  | ((
+      name: "text-change",
+      delta: Delta,
+      oldContents: Delta,
+      source: Sources
+    ) => any)
+  | ((
+      name: "selection-change",
+      range: RangeStatic,
+      oldRange: RangeStatic,
+      source: Sources
+    ) => any);
+type DebugLevel = "log" | "warn" | "error" | "info" | boolean;
+type Module = { name: string; module: unknown; options?: object };
+
+interface Options {
+  theme?: string;
+  debug?: DebugLevel | boolean;
+  registry?: Parchment.Registry;
+  readOnly?: boolean;
+  container?: HTMLElement | string;
+  placeholder?: string;
+  bounds?: HTMLElement | string | null;
+  modules?: Record<string, unknown>;
+}
+
+interface RangeStatic {
+  index: number;
+  length: number;
+}
+
+type Toolbar = {
+  container: HTMLElement;
+  controls: [string, HTMLElement][];
+  handlers: Object;
+  options: Object;
+  quill: Quill;
+};
+
+type ContentPropType = string | Delta | undefined | null;
+
+let quill: Quill | null;
+let options: Options;
+const editor = ref<HTMLElement>();
 
 const props = defineProps({
   content: {
-    type: [String, Object],
-    default: "",
+    type: [String, Object] as PropType<ContentPropType>,
+    default: null,
   },
   contentType: {
-    type: String,
+    type: String as PropType<"delta" | "html" | "text">,
     default: "delta",
-    validator: (value) => {
+    validator: (value: string) => {
       return ["delta", "html", "text"].includes(value);
     },
   },
-  enabled: {
+  enable: {
     type: Boolean,
     default: true,
   },
@@ -42,16 +97,16 @@ const props = defineProps({
     required: false,
   },
   theme: {
-    type: String,
+    type: String as PropType<"snow" | "bubble" | "">,
     default: "snow",
-    validator: (value) => {
+    validator: (value: string) => {
       return ["snow", "bubble", ""].includes(value);
     },
   },
   toolbar: {
     type: [String, Array, Object],
     required: false,
-    validator: (value) => {
+    validator: (value: string | unknown) => {
       if (typeof value === "string" && value !== "") {
         return value.charAt(0) === "#"
           ? true
@@ -61,15 +116,15 @@ const props = defineProps({
     },
   },
   modules: {
-    type: Object,
+    type: Object as PropType<Module | Module[]>,
     required: false,
   },
   options: {
-    type: Object,
+    type: Object as PropType<Options>,
     required: false,
   },
   globalOptions: {
-    type: Object,
+    type: Object as PropType<Options>,
     required: false,
   },
 });
@@ -119,9 +174,9 @@ const initialize = () => {
   if (props.theme !== "snow") editor.value.classList.remove("ql-snow");
 
   // Fix clicking the quill toolbar is detected as blur event
-  let toolbar = quill.getModule("toolbar");
+  let toolbar: Toolbar = quill.getModule("toolbar") as Toolbar;
   if (toolbar) {
-    toolbar.container.addEventListener("mousedown", (e) => {
+    toolbar.container.addEventListener("mousedown", (e: MouseEvent) => {
       e.preventDefault();
     });
   }
@@ -134,15 +189,15 @@ const initialize = () => {
   emit("ready", quill);
 };
 
-const registerModule = (moduleName, module) => {
+const registerModule = (moduleName: string, module: any) => {
   if (Quill?.imports && moduleName in Quill.imports) {
     return;
   }
   Quill.register(moduleName, module);
 };
 
-const composeOptions = () => {
-  const clientOptions = {};
+const composeOptions = (): Options => {
+  const clientOptions: Options = {};
   if (props.theme !== "") clientOptions.theme = props.theme;
   if (props.readOnly) clientOptions.readOnly = props.readOnly;
   if (props.placeholder) clientOptions.placeholder = props.placeholder;
@@ -153,10 +208,10 @@ const composeOptions = () => {
         if (typeof props.toolbar === "object") {
           return props.toolbar;
         } else if (typeof props.toolbar === "string") {
-          const str = props.toolbar;
+          const str = props.toolbar as string;
           return str.charAt(0) === "#"
             ? props.toolbar
-            : toolbarOptions[props.toolbar];
+            : toolbarOptions[props.toolbar as keyof ToolbarOptions];
         }
         return;
       })(),
@@ -164,7 +219,7 @@ const composeOptions = () => {
   }
   if (props.modules) {
     const modules = (() => {
-      const modulesOption = {};
+      const modulesOption: { [key: string]: unknown } = {};
       if (Array.isArray(props.modules)) {
         for (const module of props.modules) {
           modulesOption[module.name] = module.options ?? {};
@@ -194,19 +249,19 @@ const composeOptions = () => {
   return combined;
 };
 
-const maybeClone = (delta) => {
+const maybeClone = (delta: ContentPropType) => {
   return typeof delta === "object" && delta ? delta.slice() : delta;
 };
 
-const deltaHasValuesOtherThanRetain = (delta) => {
+const deltaHasValuesOtherThanRetain = (delta: Delta) => {
   return Object.values(delta.ops).some(
     (v) => !v.retain || Object.keys(v).length !== 1
   );
 };
 
-let internalModel;
+let internalModel: typeof props.content;
 
-const internalModelEquals = (against) => {
+const internalModelEquals = (against: ContentPropType) => {
   if (typeof internalModel === typeof against) {
     if (against === internalModel) {
       return true;
@@ -224,8 +279,12 @@ const internalModelEquals = (against) => {
   return false;
 };
 
-const handleTextChange = (delta, oldContents, source) => {
-  internalModel = maybeClone(getContents());
+const handleTextChange = (
+  delta: Delta,
+  oldContents: Delta,
+  source: Sources
+) => {
+  internalModel = maybeClone(getContents() as string | Delta);
   // Update v-model:content when text changes
   if (!internalModelEquals(props.content)) {
     emit("update:content", internalModel);
@@ -233,8 +292,12 @@ const handleTextChange = (delta, oldContents, source) => {
   emit("textChange", { delta, oldContents, source });
 };
 
-const isEditorFocus = ref();
-const handleSelectionChange = (range, oldRange, source) => {
+const isEditorFocus = ref<Boolean>();
+const handleSelectionChange = (
+  range: RangeStatic,
+  oldRange: RangeStatic,
+  source: Sources
+) => {
   // Set isEditorFocus if quill.hasFocus()
   isEditorFocus.value = !!quill?.hasFocus();
   emit("selectionChange", { range, oldRange, source });
@@ -245,7 +308,11 @@ watch(isEditorFocus, (focus) => {
   else emit("blur", editor);
 });
 
-const handleEditorChange = (...args) => {
+const handleEditorChange = (
+  ...args:
+    | [name: "text-change", delta: Delta, oldContents: Delta, source: Sources]
+    | [name: "selection-change", range: Range, oldRange: Range, source: Sources]
+) => {
   if (args[0] === "text-change")
     emit("editorChange", {
       name: args[0],
@@ -262,18 +329,18 @@ const handleEditorChange = (...args) => {
     });
 };
 
-const getEditor = () => {
-  return editor.value;
+const getEditor = (): HTMLElement => {
+  return editor.value as HTMLElement;
 };
 
-const getToolbar = () => {
-  let toolbar = quill?.getModule("toolbar");
+const getToolbar = (): HTMLElement => {
+  let toolbar = quill?.getModule("toolbar") as Toolbar;
   return toolbar?.container;
 
   // return quill?.getModule("toolbar")?.container;
 };
 
-const getQuill = () => {
+const getQuill = (): Quill => {
   if (quill) return quill;
   else
     throw `The quill editor hasn't been instantiated yet,
@@ -281,7 +348,7 @@ const getQuill = () => {
                         or use v-on:ready="onReady(quill)" event instead.`;
 };
 
-const getContents = (index, length) => {
+const getContents = (index?: number, length?: number) => {
   if (props.contentType === "html") {
     return getHTML();
   } else if (props.contentType === "text") {
@@ -290,35 +357,46 @@ const getContents = (index, length) => {
   return quill?.getContents(index, length);
 };
 
-const setContents = (content, source = "api") => {
+const setContents = (content: ContentPropType, source: Sources = "api") => {
   const normalizedContent = !content
     ? props.contentType === "delta"
       ? new Delta()
       : ""
     : content;
   if (props.contentType === "html") {
-    setHTML(normalizedContent);
+    setHTML(normalizedContent as string);
   } else if (props.contentType === "text") {
-    setText(normalizedContent, source);
+    setText(normalizedContent as string, source);
   } else {
-    quill?.setContents(normalizedContent, source);
+    quill?.setContents(normalizedContent as Delta, source);
   }
   internalModel = maybeClone(normalizedContent);
 };
 
-const insertText = (index, text, format = "", value = null, source = "api") => {
+const insertText = (
+  index: number,
+  text: string,
+  format: string = "",
+  value: any = null,
+  source: Sources = "api"
+) => {
   quill?.insertText(index, text, format, value, source);
 };
 
-const insertEmbed = (index, type, value, source = "api") => {
+const insertEmbed = (
+  index: number,
+  type: string,
+  value: any,
+  source: Sources = "api"
+) => {
   quill?.insertEmbed(index, type, value, source);
 };
 
-const getText = (index, length) => {
+const getText = (index?: number, length?: number): string => {
   return quill?.getText(index, length) ?? "";
 };
 
-const setText = (text, source = "api") => {
+const setText = (text: string, source: Sources = "api") => {
   quill?.setText(text, source);
 };
 
@@ -326,12 +404,12 @@ const getHTML = () => {
   return quill?.root.innerHTML ?? "";
 };
 
-const setHTML = (html) => {
+const setHTML = (html: string) => {
   if (quill) quill.root.innerHTML = html;
 };
 
-const pasteHTML = (html, source = "api") => {
-  const delta = quill?.clipboard.convert(html);
+const pasteHTML = (html: string, source: Sources = "api") => {
+  const delta = quill?.clipboard.convert(html as {});
   if (delta) quill?.setContents(delta, source);
 };
 
@@ -341,11 +419,11 @@ const focus = () => {
 
 const reinit = () => {
   nextTick(() => {
-    if (!slots.toolbar && quill) {
+    if (!useSlots().toolbar && quill) {
       // NOTE: this is weird
       console.log(quill.getModule("toolbar"));
       // getToolbar().remove()
-      let toolbar = quill.getModule("toolbar");
+      let toolbar = quill.getModule("toolbar") as Toolbar;
       toolbar?.container.remove();
     }
     initialize();

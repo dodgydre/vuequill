@@ -16,6 +16,6 @@
     "declaration": true,
     "allowJs": true,
   },
-  "include": ["lib/**/*.ts", "lib/**/*.d.ts", "lib/**/*.tsx", "lib/**/*.vue", "lib/options.js"],
+  "include": ["lib/**/*.ts", "lib/**/*.d.ts", "lib/**/*.tsx", "lib/**/*.vue", "src/options.ts", "src/Editor.vue"],
   "references": [{ "path": "./tsconfig.node.json" }],
 }

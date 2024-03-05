@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [vue()],
   build: {
     lib: {
-      entry: resolve(__dirname, 'lib/main.js'),
+      entry: resolve(__dirname, 'src/index.js'),
       name: "Editor",
       fileName: "editor"
     },
