@@ -105,6 +105,7 @@ onBeforeUnmount(() => {
 });
 
 const initialize = () => {
+  console.log("test");
   if (!editor.value) return;
   options = composeOptions();
   console.log(options);
@@ -189,21 +190,15 @@ const composeOptions = (): Options => {
 
     clientOptions.modules = Object.assign({}, clientOptions.modules, modules);
   }
-  if (props.globalOptions?.modules) {
-    clientOptions.modules = Object.assign(
-      {},
-      clientOptions.modules,
-      props.globalOptions.modules
-    );
-  }
+  // if (props.globalOptions?.modules) {
+  //   clientOptions.modules = Object.assign(
+  //     {},
+  //     clientOptions.modules,
+  //     props.globalOptions.modules
+  //   );
+  // }
 
-  let combined = Object.assign(
-    {},
-    props.globalOptions,
-    props.options,
-    clientOptions
-  );
-  return combined;
+  return Object.assign({}, props.globalOptions, props.options, clientOptions);
 };
 
 const maybeClone = (delta: ContentPropType) => {

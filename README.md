@@ -1,8 +1,10 @@
 ## Fork of [@vueup/vuequill](https://github.com/vueup/vue-quill) using [Quill@rc](https://github.com/quilljs/quill)
 
+Not fully working yet.
+
 ### Installation
 
-npm install @ohgeorgie/vuequill@latest --save
+<!-- npm install @ohgeorgie/vuequill@latest --save -->
 
 ### Usage
 

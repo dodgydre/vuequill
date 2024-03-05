@@ -1,7 +1,7 @@
 {
-  "name": "@dodgydre/vuequill",
+  "name": "@ohgeorgie/vuequill",
   "private": false,
-  "version": "1.0.0",
+  "version": "1.0.2",
   "type": "module",
   "files": ["dist"],
   "main": "./dist/editor.umd.cjs",
@@ -14,10 +14,10 @@
     "./dist/style.css": "./dist/style.css"
   },
   "scripts": {
-    "postinstall": "cd example && npm install",
     "dev": "vite",
     "build": "vite build &&vue-tsc --emitDeclarationOnly",
     "preview": "vite preview",
+    "demo:install": "cd example && npm install",
     "demo:dev": "cd example && npm run dev"
   },
   "dependencies": {
