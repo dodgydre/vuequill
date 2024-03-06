@@ -9,7 +9,7 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'src/index.js'),
       name: "Editor",
-      fileName: "editor"
+      fileName: "index"
     },
     rollupOptions: {
       external: ["vue"],

@@ -1,10 +1,9 @@
 ## Fork of [@vueup/vuequill](https://github.com/vueup/vue-quill) using [Quill@rc](https://github.com/quilljs/quill)
 
-Not fully working yet.
 
 ### Installation
 
-<!-- npm install @ohgeorgie/vuequill@latest --save -->
+npm install @ohgeorgie/vuequill@latest --save
 
 ### Usage
 
@@ -14,7 +13,7 @@ in main.js
 import { createApp } from "vue";
 import App from "./App.vue";
 import "quill/dist/quill.snow.css";
-import { Editor } from "@ohgeorgie/vuequill";
+import { Quill, Editor } from "@ohgeorgie/vuequill";
 
 const globalOptions = {
    debug: "warn",

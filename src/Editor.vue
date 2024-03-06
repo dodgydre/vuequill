@@ -105,10 +105,8 @@ onBeforeUnmount(() => {
 });
 
 const initialize = () => {
-  console.log("test");
   if (!editor.value) return;
   options = composeOptions();
-  console.log(options);
   // Register modules
   if (props.modules) {
     if (Array.isArray(props.modules)) {
@@ -190,14 +188,13 @@ const composeOptions = (): Options => {
 
     clientOptions.modules = Object.assign({}, clientOptions.modules, modules);
   }
-  // if (props.globalOptions?.modules) {
-  //   clientOptions.modules = Object.assign(
-  //     {},
-  //     clientOptions.modules,
-  //     props.globalOptions.modules
-  //   );
-  // }
-
+  if (props.globalOptions?.modules) {
+    clientOptions.modules = Object.assign(
+      {},
+      clientOptions.modules,
+      props.globalOptions.modules
+    );
+  }
   return Object.assign({}, props.globalOptions, props.options, clientOptions);
 };
 
@@ -372,8 +369,6 @@ const focus = () => {
 const reinit = () => {
   nextTick(() => {
     if (!useSlots().toolbar && quill) {
-      // NOTE: this is weird
-      console.log(quill.getModule("toolbar"));
       // getToolbar().remove()
       let toolbar = quill.getModule("toolbar") as Toolbar;
       toolbar?.container.remove();

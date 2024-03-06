@@ -1,21 +1,19 @@
 {
   "name": "@ohgeorgie/vuequill",
   "private": false,
-  "version": "1.0.2",
+  "version": "1.0.3",
   "type": "module",
   "files": ["dist"],
   "main": "./dist/editor.umd.cjs",
   "module": "./dist/editor.js",
   "exports": {
     ".": {
-      "import": "./dist/editor.js",
-      "require": "./dist/editor.umd.cjs"
-    },
-    "./dist/style.css": "./dist/style.css"
+      "import": "./dist/index.js"
+    }
   },
   "scripts": {
-    "dev": "vite",
-    "build": "vite build &&vue-tsc --emitDeclarationOnly",
+    "dev": "vite && vue-tsc --emitDeclarationOnly",
+    "build": "vite build && vue-tsc --emitDeclarationOnly",
     "preview": "vite preview",
     "demo:install": "cd example && npm install",
     "demo:dev": "cd example && npm run dev"
