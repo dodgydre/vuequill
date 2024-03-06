@@ -1,7 +1,14 @@
 {
   "name": "@ohgeorgie/vuequill",
+  "description": "Vue 3 package for Quill 2.0.0. Forked from vueup/vue-quill",
+  "license": "MIT",
+  "author": "Andreas Georghiou",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dodgydre/vuequill.git"
+  },
   "private": false,
-  "version": "1.0.3",
+  "version": "1.0.4",
   "type": "module",
   "files": ["dist"],
   "main": "./dist/editor.umd.cjs",
@@ -28,5 +35,6 @@
     "typescript": "^5.2.2",
     "vite": "^5.1.4",
     "vue-tsc": "^1.8.27"
-  }
+  },
+  "keywords": ["quill, editor, vue, vue3, vuejs"]
 }
