@@ -5,7 +5,6 @@ import {
   onMounted,
   ref,
   watch,
-  defineExpose,
   PropType,
   useSlots,
 } from "vue";
