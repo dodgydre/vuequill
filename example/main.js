@@ -7,6 +7,7 @@ const globalOptions = {
     debug: "warn",
     modules: {},
     placeholder: "Write something",
+    contentType: "html",
     theme: "snow",
 }
 

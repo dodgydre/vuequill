@@ -22,7 +22,12 @@ const closeEmojiPanel = () => {
 
 <template>
   <div>
-    <Editor v-model="editorbody" toolbar="#toolbar" ref="editor">
+    <Editor
+      v-model:content="editorbody"
+      contentType="html"
+      toolbar="#toolbar"
+      ref="editor"
+    >
       <template #toolbar>
         <div id="toolbar">
           <!-- Add font size dropdown -->
