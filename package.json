@@ -13,8 +13,8 @@
   "files": [
     "dist"
   ],
-  "main": "./dist/editor.umd.cjs",
-  "module": "./dist/editor.js",
+  "main": "./dist/index.umd.cjs",
+  "module": "./dist/index.js",
   "exports": {
     ".": {
       "import": "./dist/index.js"

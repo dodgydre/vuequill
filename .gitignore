@@ -4,4 +4,4 @@
 /coverage.data
 /coverage/
 
-/dist
+**/dist
